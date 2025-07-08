@@ -27,6 +27,9 @@ ADMIN_IDS = [int(id) for id in env.str("ADMIN_IDS").split(",")]
 
 REDIS_URL = env.str("REDIS_URL")
 
+CSRF_TRUSTED_ORIGINS = [
+    BOT_HOST,
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
