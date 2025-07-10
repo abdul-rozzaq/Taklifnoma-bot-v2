@@ -1,7 +1,15 @@
 from django.db import models
 
 
-class BotUser(models.Model):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class BotUser(BaseModel):
     ROLE_CHOICES = [
         ("user", "Foydalanuvchi"),
         ("mentor", "Mentor"),
@@ -20,8 +28,6 @@ class BotUser(models.Model):
     language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default="uz")
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="user")
     is_registered = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.full_name} ({self.telegram_id})"
@@ -31,7 +37,7 @@ class BotUser(models.Model):
         verbose_name_plural = "Bot foydalanuvchilari"
 
 
-class Event(models.Model):
+class Event(BaseModel):
     title = models.CharField(max_length=255)
     description = models.TextField()
     start_date = models.DateTimeField()
@@ -40,8 +46,6 @@ class Event(models.Model):
     max_participants = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(BotUser, on_delete=models.CASCADE, related_name="created_events")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -51,29 +55,25 @@ class Event(models.Model):
         verbose_name_plural = "Tadbirlar"
 
 
-class EventRegistration(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations")
-    user = models.ForeignKey(BotUser, on_delete=models.CASCADE, related_name="event_registrations")
-    registered_at = models.DateTimeField(auto_now_add=True)
+class Achievement(BaseModel):
+    owner = models.ForeignKey(BotUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    file = models.FileField(upload_to="achievement-files/")
 
     def __str__(self):
-        return f"{self.user.full_name} - {self.event.title}"
-
-    class Meta:
-        unique_together = ["event", "user"]
-        verbose_name = "Tadbir ro'yhatdan o'tish"
-        verbose_name_plural = "Tadbir ro'yhatdan o'tishlar"
+        return self.title
 
 
-class UserMentor(models.Model):
-    user = models.ForeignKey(BotUser, on_delete=models.CASCADE, related_name="mentors")
-    mentor = models.ForeignKey(BotUser, on_delete=models.CASCADE, related_name="users")
-    assigned_at = models.DateTimeField(auto_now_add=True)
+class Invitation(BaseModel):
+    owner = models.ForeignKey(BotUser, on_delete=models.CASCADE, related_name="invitations")
+    code = models.CharField(max_length=32, unique=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="invitations")
+    is_used = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.user.full_name} - {self.mentor.name}"
+        return f"{self.code} - {self.owner.full_name}"
 
     class Meta:
-        unique_together = ["user", "mentor"]
-        verbose_name = "Foydalanuvchi mentor"
-        verbose_name_plural = "Foydalanuvchi mentorlar"
+        verbose_name = "Taklifnoma"
+        verbose_name_plural = "Taklifnomalar"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BotUser, Event, EventRegistration, UserMentor
+from .models import BotUser, Event, Achievement
 
 
 @admin.register(BotUser)
@@ -21,12 +21,20 @@ class EventAdmin(admin.ModelAdmin):
     date_hierarchy = "start_date"
 
 
-@admin.register(EventRegistration)
-class EventRegistrationAdmin(admin.ModelAdmin):
-    list_display = ["event", "user", "registered_at"]
-    list_filter = ["event", "registered_at"]
-    search_fields = ["event__title", "user__full_name"]
-    readonly_fields = ["registered_at"]
+@admin.register(Achievement)
+class AchievementAdmin(admin.ModelAdmin):
+    list_display = ["title", "description", "created_at"]
+    search_fields = ["title", "description"]
+    readonly_fields = ["created_at", "updated_at"]
+    list_filter = ["created_at"]
+
+
+# @admin.register(EventRegistration)
+# class EventRegistrationAdmin(admin.ModelAdmin):
+#     list_display = ["event", "user", "registered_at"]
+#     list_filter = ["event", "registered_at"]
+#     search_fields = ["event__title", "user__full_name"]
+#     readonly_fields = ["registered_at"]
 
 
 # @admin.register(Mentor)
@@ -38,9 +46,9 @@ class EventRegistrationAdmin(admin.ModelAdmin):
 #     readonly_fields = ["created_at"]
 
 
-@admin.register(UserMentor)
-class UserMentorAdmin(admin.ModelAdmin):
-    list_display = ["user", "mentor", "assigned_at"]
-    list_filter = ["mentor", "assigned_at"]
-    search_fields = ["user__full_name", "mentor__name"]
-    readonly_fields = ["assigned_at"]
+# @admin.register(UserMentor)
+# class UserMentorAdmin(admin.ModelAdmin):
+#     list_display = ["user", "mentor", "assigned_at"]
+#     list_filter = ["mentor", "assigned_at"]
+#     search_fields = ["user__full_name", "mentor__name"]
+#     readonly_fields = ["assigned_at"]

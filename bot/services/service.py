@@ -1,6 +1,10 @@
 from django.conf import settings
+
 from typing import Optional
-from bot.models import BotUser
+
+from bot.models import Achievement, BotUser, Invitation
+
+from asgiref.sync import sync_to_async
 
 
 class BotService:
@@ -15,6 +19,18 @@ class BotService:
             },
         )
         return user
+
+    @staticmethod
+    async def add_admin(telegram_id: int):
+        try:
+            user = await BotUser.objects.aget(telegram_id=telegram_id)
+            user.role = "admin"
+            await user.asave()
+
+            return user
+
+        except BotUser.DoesNotExist:
+            return None
 
     @staticmethod
     async def is_admin(user_id: int) -> bool:
@@ -67,3 +83,33 @@ class BotService:
             return True
         except BotUser.DoesNotExist:
             return False
+
+    @staticmethod
+    @sync_to_async
+    def get_user_achievements(user_id: int):
+        achievements = Achievement.objects.filter(owner__telegram_id=user_id).values("pk", "title", "description", "file")
+        return list(achievements)
+
+    @staticmethod
+    async def get_achievement(title: str):
+        try:
+            achievement = await Achievement.objects.aget(title=title)
+            return achievement
+        except Achievement.DoesNotExist:
+            return None
+
+    @staticmethod
+    async def find_user(telegram_id: int):
+        try:
+            user = await BotUser.objects.aget(telegram_id=telegram_id)
+
+            return user
+        except BotUser.DoesNotExist:
+            return None
+
+    @staticmethod
+    async def get_user_invitations(telegram_id):
+        user = await BotUser.objects.filter(telegram_id=telegram_id).afirst()
+        if not user:
+            return []
+        return await Invitation.objects.filter(owner=user).all()

@@ -26,6 +26,7 @@ BOT_WEBHOOK_URL = f"{BOT_HOST}/bot/webhook/{BOT_TOKEN.split(':', maxsplit=1)[0]}
 ADMIN_IDS = [int(id) for id in env.str("ADMIN_IDS").split(",")]
 
 REDIS_URL = env.str("REDIS_URL")
+MONGODB_URL = env.str("MONGODB_URL")
 
 CSRF_TRUSTED_ORIGINS = [
     BOT_HOST,
@@ -106,11 +107,13 @@ USE_TZ = True
 
 
 STATIC_URL = "static/"
-
+MEDIA_URL = "media/"
 
 if DEBUG:
     STATICFILES_DIRS = [BASE_DIR / "static"]
 else:
     STATIC_ROOT = BASE_DIR / "static"
+
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

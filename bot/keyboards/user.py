@@ -1,5 +1,6 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
-from bot.services.translation import translation
+
+from bot.services.translation import TranslationService
 
 
 def get_language_keyboard():
@@ -18,7 +19,7 @@ def get_contact_keyboard(lang: str = "uz"):
     """Kontakt ulashish klaviaturasi"""
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text=translation.get_text("share_contact", lang), request_contact=True)],
+            [KeyboardButton(text=TranslationService.get_text("share_contact", lang), request_contact=True)],
         ],
         resize_keyboard=True,
         one_time_keyboard=True,
@@ -29,13 +30,13 @@ def get_main_menu_keyboard(lang: str = "uz", is_admin: bool = False):
     """Asosiy menyu klaviaturasi"""
     buttons = [
         [
-            KeyboardButton(text=translation.get_text("registration_menu", lang)),
-            KeyboardButton(text=translation.get_text("tutors_menu", lang)),
+            KeyboardButton(text=TranslationService.get_text("my_invitations", lang)),
+            KeyboardButton(text=TranslationService.get_text("achievements_menu", lang)),
         ],
     ]
 
     if is_admin:
-        buttons.append([KeyboardButton(text=translation.get_text("admin_panel", lang))])
+        buttons.append([KeyboardButton(text=TranslationService.get_text("admin_panel", lang))])
 
     keyboard = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
     return keyboard
@@ -45,8 +46,22 @@ def get_back_to_menu_keyboard(lang: str = "uz"):
     """Asosiy menyuga qaytish klaviaturasi"""
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text=translation.get_text("back_to_menu", lang))],
+            [KeyboardButton(text=TranslationService.get_text("back_to_menu", lang))],
         ],
         resize_keyboard=True,
         one_time_keyboard=True,
+    )
+
+
+def get_achievements_keyboard(achievements: list, lang: str = "uz"):
+    """Achievementlar uchun klaviatura"""
+
+    keyboards = [[KeyboardButton(text=achievement["title"])] for achievement in achievements]
+
+    keyboards.insert(0, [KeyboardButton(text=TranslationService.get_text("back_to_menu", lang=lang))])
+
+    return ReplyKeyboardMarkup(
+        keyboard=keyboards,
+        resize_keyboard=True,
+        selective=True,
     )
