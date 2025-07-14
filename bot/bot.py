@@ -2,17 +2,12 @@ from django.conf import settings
 
 from aiogram import Bot, Dispatcher, types
 
-
-from motor.motor_asyncio import AsyncIOMotorClient
-
 from bot.handlers.user import router as user_router
 from bot.handlers.admin import router as admin_router
 from bot.handlers.invitation import router as invitation_router
 
 from bot.services.service import BotService
 
-
-client = AsyncIOMotorClient(settings.MONGODB_URL)
 
 webhook_dp = Dispatcher()
 
