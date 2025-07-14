@@ -1,0 +1,107 @@
+{# templates/admin/send_invitations.html #}
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}
+<style>
+    .user-selection {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color, #ccc);
+        background: var(--body-bg, #f9f9f9);
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 5px;
+    }
+
+    a.button {
+        padding: 10px 15px;
+    }
+</style>
+{% endblock extrahead %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div id="" class="flex-container">
+    <div id="content-main">
+
+        <div class="module">
+            <h2 style="margin-bottom: 8px;">{{ title }}</h2>
+
+            <div class="form-row">
+                <fieldset class="module aligned">
+                    <legend><strong>Tadbir tafsilotlari</strong></legend>
+                    <div class="aligned">
+                        <p><strong>🎉 Nomi:</strong> {{ event.title }}</p>
+                        <p><strong>📅 Sana:</strong> {{ event.date|date:"d.m.Y H:i" }}</p>
+                        <p><strong>📍 Manzil:</strong> {{ event.location }}</p>
+                        <p><strong>📝 Tavsif:</strong> {{ event.description }}</p>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="form-row">
+                <fieldset class="module aligned">
+                    <legend><strong>📊 Statistika</strong></legend>
+                    <div class="aligned">
+                        <p>• Yangi foydalanuvchilar: <strong>{{ available_users.count }}</strong></p>
+                        <p>• Taklif yuborilganlar: <strong>{{ existing_invitations_count }}</strong></p>
+                    </div>
+                </fieldset>
+            </div>
+
+            <form method="post" class="admin-form">
+                {% csrf_token %}
+
+                <fieldset class="module aligned">
+                    <label style="margin-bottom: 8px; display: inline-block; font-weight: bold;">Foydalanuvchilarni tanlang:</label>
+
+                    <div class="form-row" style="margin-bottom: 8px;">
+                        <div class="user-selection">
+                            {% if available_users %}
+                                {% for user in available_users %}
+                                <div class="form-row user-item" style="border-bottom: 1px solid #eaeaea; padding: 5px 0;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" name="selected_users" value="{{ user.id }}" class="user-checkbox" style="margin-right: 10px;">
+                                        <span>
+                                            <strong>{{ user.id }}.</strong>
+                                            <strong>{{ user.full_name }}</strong>
+                                            <span style="color: #888; font-size: 12px;"> - ID: {{ user.telegram_id }}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p style="color: #999;">Taklif yuboriladigan foydalanuvchilar mavjud emas.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <label>
+                            <input type="checkbox" id="select-all">
+                            <strong>Barchasini tanlash</strong>
+                        </label>
+                    </div>
+
+                </fieldset>
+
+                <div class="submit-row">
+                    <input type="submit" class="default" value="📤 Taklif yuborish">
+                    <a href="{% url 'admin:bot_event_changelist' %}" class="button cancel-link">❌ Bekor qilish</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('select-all').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+</script>
+{% endblock %}

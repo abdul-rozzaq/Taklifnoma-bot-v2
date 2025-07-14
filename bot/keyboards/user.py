@@ -65,3 +65,14 @@ def get_achievements_keyboard(achievements: list, lang: str = "uz"):
         resize_keyboard=True,
         selective=True,
     )
+
+
+def get_invitation_buttons(invitation_id: int):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="✅ Qatnashaman", callback_data=f"accept_{invitation_id}"),
+                InlineKeyboardButton(text="❌ Qatnashmayman", callback_data=f"decline_{invitation_id}"),
+            ]
+        ]
+    )

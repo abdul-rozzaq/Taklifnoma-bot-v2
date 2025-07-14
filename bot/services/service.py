@@ -2,7 +2,7 @@ from django.conf import settings
 
 from typing import Optional
 
-from bot.models import Achievement, BotUser, Invitation
+from bot.models import Achievement, BotUser, Invitation, InvitationStatus
 
 from asgiref.sync import sync_to_async
 
@@ -108,8 +108,27 @@ class BotService:
             return None
 
     @staticmethod
-    async def get_user_invitations(telegram_id):
-        user = await BotUser.objects.filter(telegram_id=telegram_id).afirst()
-        if not user:
-            return []
-        return await Invitation.objects.filter(owner=user).all()
+    @sync_to_async
+    def get_user_invitations(telegram_id):
+        # user = BotUser.objects.filter(telegram_id=telegram_id).afirst()
+        # if not user:
+        # return await Invitation.objects.filter(owner=user).all()
+        return []
+
+    @staticmethod
+    async def set_invitation_status(invitation_id, status: InvitationStatus):
+        try:
+            invitation = await Invitation.objects.aget(pk=invitation_id)
+            invitation.status = status
+            await invitation.asave()
+
+        except Invitation.DoesNotExist:
+            return False
+
+    @staticmethod
+    async def get_invitation(invitation_id: int):
+        try:
+            invitation = await Invitation.objects.select_related("event").aget(id=invitation_id)
+            return invitation
+        except Invitation.DoesNotExist:
+            return False

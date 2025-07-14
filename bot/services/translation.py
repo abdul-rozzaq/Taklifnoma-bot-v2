@@ -47,6 +47,10 @@ class TranslationService:
             "my_invitations": "🎟 Mening taklifnomalarim",
             "no_invitations": "Sizda taklifnomalar yo‘q.",
             "your_invitations": "Sizning taklifnomalaringiz:",
+            # no russian translation
+            "invitation_text": "🎉 *Yangi event taklifnomasi!*\n\n📋 *{title}*\n📝 {description}\n📅 *Sana:* {start_date}\n📍 *Manzil:* {location}\n\nIltimos, javobingizni tanlang:",
+            "invitation_accept": "✅ *Ajoyib!*\n\nSiz '*{title}*' eventiga qatnashishga rozilik bildirdingiz!\n\n📅 *Sana:* {start_date}\n📍 *Manzil:* {location}\n\nEvent vaqti yaqinlashganda sizga eslatma yuboramiz! 🔔",
+            "invitation_declined": "❌ *Afsuski!*\n\nSiz '*{title}*' eventiga qatnashishdan bosh tortdingiz.\n\nKeyingi eventlarda ko'rishguncha! 👋",
         },
         RU: {
             "welcome": "🎉 Добро пожаловать в бот церемонии награждения!",
@@ -101,6 +105,7 @@ class TranslationService:
         if kwargs:
             try:
                 return value.format(**kwargs)
-            except Exception:
+            except Exception as e:
+                print(e)
                 return value
         return value

@@ -38,12 +38,12 @@ class BotUser(BaseModel):
 
 
 class Event(BaseModel):
+    invitation_photo = models.ImageField(upload_to="invitation-photos/", null=True, blank=True)
+
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(max_length=4090)
     start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
     location = models.CharField(max_length=255, blank=True, null=True)
-    max_participants = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(BotUser, on_delete=models.CASCADE, related_name="created_events")
 
@@ -65,15 +65,17 @@ class Achievement(BaseModel):
         return self.title
 
 
-class Invitation(BaseModel):
-    owner = models.ForeignKey(BotUser, on_delete=models.CASCADE, related_name="invitations")
-    code = models.CharField(max_length=32, unique=True)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="invitations")
-    is_used = models.BooleanField(default=False)
+class InvitationStatus(models.TextChoices):
+    PENDING = ("pending", "Pending")
+    ACCPTED = ("accepted", "Accepted")
+    DECLINED = ("declined", "Declined")
 
-    def __str__(self):
-        return f"{self.code} - {self.owner.full_name}"
+
+class Invitation(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(BotUser, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=InvitationStatus.choices, default=InvitationStatus.PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Taklifnoma"
-        verbose_name_plural = "Taklifnomalar"
+        unique_together = ("event", "user")
