@@ -21,7 +21,7 @@ class BotUser(BaseModel):
         ("ru", "Русский"),
     ]
 
-    telegram_id = models.BigIntegerField(unique=True)
+    telegram_id = models.BigIntegerField(unique=True, null=True, blank=True)
     full_name = models.CharField(max_length=255)
     passport = models.CharField(max_length=20, blank=True, null=True, unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
