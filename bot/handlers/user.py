@@ -60,6 +60,13 @@ async def handle_language_callback(callback: CallbackQuery, state: FSMContext):
     is_admin = await BotService.is_admin(user.id)
 
     await callback.message.edit_text(TranslationService.get_text("language_selected", lang))
+
+    # Ro'yhatdan o'tganligini tekshiradi
+    if not user_obj.is_registered:
+        await callback.message.answer(TranslationService.get_text("enter_name", lang), reply_markup=None)
+        await state.set_state(RegistrationState.waiting_for_name)
+        return
+
     await callback.message.answer(
         TranslationService.get_text("main_menu", lang=user_obj.language),
         reply_markup=get_main_menu_keyboard(user_obj.language, is_admin),
